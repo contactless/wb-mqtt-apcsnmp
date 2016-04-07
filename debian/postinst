@@ -1,0 +1,4 @@
+#!/bin/sh
+
+update-rc.d wb-mqtt-apcsnmp defaults
+invoke-rc.d wb-mqtt-apcsnmp start

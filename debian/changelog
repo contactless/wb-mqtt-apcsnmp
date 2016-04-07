@@ -1,0 +1,5 @@
+wb-mqtt-apcsnmp (0.1) unstable; urgency=low
+
+  * Initial debianization
+
+ -- Ivan Shvedunov <ivan4th@gmail.com>  Thu, 07 Apr 2016 06:52:24 +0300

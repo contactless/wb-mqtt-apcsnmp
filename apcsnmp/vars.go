@@ -44,4 +44,6 @@ var apcVars []*ApcVar = []*ApcVar{
 	&ApcVar{"Serial Number", "upsDiagIMSerialNum.1", "-", AsIs},
 	&ApcVar{"Manufacture Date", "upsDiagIMManufactureDate.1", "-", AsIs},
 	&ApcVar{"Hardware Revision", "upsDiagIMHardwareRev.1", "-", AsIs},
+	// Status
+	&ApcVar{"Output Status", "upsBasicOutputStatus.0", "-", AsIs},
 }

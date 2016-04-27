@@ -26,7 +26,7 @@ _testmain.go
 /wb-mqtt-apcsnmp
 apcsnmp/apcsnmp.test
 
-_vendor
+vendor
 
 debian/files
 debian/wb-mqtt-apcsnmp*

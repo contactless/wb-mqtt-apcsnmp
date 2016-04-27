@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./apcsnmp"
+	"github.com/contactless/wb-mqtt-apcsnmp/apcsnmp"
 	"flag"
 	"github.com/contactless/wbgo"
 	"time"

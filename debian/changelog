@@ -1,3 +1,9 @@
+wb-mqtt-apcsnmp (0.3+beta1) stable; urgency=medium
+
+  * Add multiple instance launch support in init script 
+
+ -- Nikita Maslov <n.maslov@contactless.ru>  Thu, 04 Aug 2016 21:48:31 +0300
+
 wb-mqtt-apcsnmp (0.2) stable; urgency=medium
 
   * add upsBasicOutputStatus

@@ -15,6 +15,7 @@
 # with your own name if you copy and modify this script.
 
 # Do NOT "set -e"
+# set -x
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
@@ -26,6 +27,8 @@ DAEMON_ARGS=""
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 APCSNMP_OPTIONS=""
+
+PROCESS_NAME=wb-apcsnmp
 
 # Exit if the package is not installed
 [ -x "$DAEMON" ] || exit 0
@@ -55,11 +58,23 @@ do_start()
         #    log_failure_msg "Can't start apcsnmp driver: configuration file $CONFIG_FILE not found"
         #    return 2
         #fi
-        start-stop-daemon --start --quiet --make-pidfile --pidfile $PIDFILE --exec $DAEMON --test > /dev/null \
-		|| return 1
-	start-stop-daemon --start --quiet --make-pidfile --background --pidfile $PIDFILE --exec $DAEMON -- \
-		$DAEMON_ARGS \
-		|| return 2
+        OLD_IFS=$IFS
+        IFS="!"
+
+        i=0
+        for args in $DAEMON_ARGS; do
+                args=" $args"  # don't touch it, s-s-d want this space to be
+                
+                start-stop-daemon --start --quiet --make-pidfile --pidfile $PIDFILE.$i --exec $DAEMON --test > /dev/null \
+		        || return 1
+                start-stop-daemon --start --quiet --make-pidfile --background --pidfile $PIDFILE.$i --exec $DAEMON -- \
+                        $args \
+                        || return 2
+
+                i=$(($i + 1))
+        done
+
+        IFS=$OLD_IFS
 	# Add code here, if necessary, that waits for the process to be ready
 	# to handle requests from services started subsequently which depend
 	# on this one.  As a last resort, sleep for some time.
@@ -75,19 +90,26 @@ do_stop()
 	#   1 if daemon was already stopped
 	#   2 if daemon could not be stopped
 	#   other if a failure occurred
-	start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --exec $DAEMON
-	RETVAL="$?"
-	[ "$RETVAL" = 2 ] && return 2
-	# Wait for children to finish too if this is a daemon that forks
-	# and if the daemon is only ever run from this initscript.
-	# If the above conditions are not satisfied then add some other code
-	# that waits for the process to drop all resources that could be
-	# needed by services started subsequently.  A last resort is to
-	# sleep for some time.
-	start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5 --exec $DAEMON
-	[ "$?" = 2 ] && return 2
-	# Many daemons don't delete their pidfiles when they exit.
-	rm -f $PIDFILE
+        RETVAL=0
+
+        i=0
+        for args in `ls $PIDFILE.* 2>/dev/null || echo ''`; do
+                start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE.$i --exec $DAEMON
+                RETVAL="$?"
+                [ "$RETVAL" = 2 ] && return 2
+                # Wait for children to finish too if this is a daemon that forks
+                # and if the daemon is only ever run from this initscript.
+                # If the above conditions are not satisfied then add some other code
+                # that waits for the process to drop all resources that could be
+                # needed by services started subsequently.  A last resort is to
+                # sleep for some time.
+                # start-stop-daemon --stop --quiet --oknodo --retry=0/30/KILL/5  --exec $DAEMON
+                # [ "$?" = 2 ] && return 2
+                # Many daemons don't delete their pidfiles when they exit.
+                rm -f $PIDFILE.$i
+
+                i=$(($i + 1))
+        done
 	return "$RETVAL"
 }
 

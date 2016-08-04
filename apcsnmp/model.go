@@ -9,10 +9,6 @@ import (
 	"time"
 )
 
-const (
-	DEV_NAME = "apcups"
-)
-
 type ConverterFunc func(in string) string
 
 func AsIs(in string) string { return in }
@@ -120,10 +116,11 @@ type ApcUpsModel struct {
 	wbgo.ModelBase
 	snmp *gosnmp.GoSNMP
 	dev  *ApcUpsDevice
+        deviceName string
 }
 
-func NewApcUpsModel(snmp *gosnmp.GoSNMP) *ApcUpsModel {
-	return &ApcUpsModel{snmp: snmp}
+func NewApcUpsModel(snmp *gosnmp.GoSNMP, deviceName string) *ApcUpsModel {
+	return &ApcUpsModel{snmp: snmp, deviceName: deviceName}
 }
 
 func (model *ApcUpsModel) Start() error {
@@ -134,7 +131,7 @@ func (model *ApcUpsModel) Start() error {
 	} else {
 		devTitle = resp.Variables[0].Value.(string)
 	}
-	model.dev = newApcUpsDevice(model.snmp, DEV_NAME, devTitle)
+	model.dev = newApcUpsDevice(model.snmp, model.deviceName, devTitle)
 	model.Observer.OnNewDevice(model.dev)
 	return nil
 }

@@ -10,12 +10,12 @@ const (
 	POLL_INTERVAL_MS = 1000
 )
 
-func NewApcSnmpDriver(snmpAddress, brokerAddress string) (*wbgo.Driver, error) {
+func NewApcSnmpDriver(snmpAddress, brokerAddress string, deviceName string) (*wbgo.Driver, error) {
 	snmp, err := gosnmp.NewGoSNMP(snmpAddress, "public", gosnmp.Version2c, 5)
 	if err != nil {
 		wbgo.Error.Fatal(err)
 	}
-	model := NewApcUpsModel(snmp)
+	model := NewApcUpsModel(snmp, deviceName)
 	driver := wbgo.NewDriver(model, wbgo.NewPahoMQTTClient(brokerAddress, DRIVER_CLIENT_ID, false))
 	driver.SetPollInterval(POLL_INTERVAL_MS)
 	return driver, nil

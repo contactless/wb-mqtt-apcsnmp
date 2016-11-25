@@ -114,9 +114,9 @@ func (dev *ApcUpsDevice) Poll() {
 
 type ApcUpsModel struct {
 	wbgo.ModelBase
-	snmp *gosnmp.GoSNMP
-	dev  *ApcUpsDevice
-        deviceName string
+	snmp       *gosnmp.GoSNMP
+	dev        *ApcUpsDevice
+	deviceName string
 }
 
 func NewApcUpsModel(snmp *gosnmp.GoSNMP, deviceName string) *ApcUpsModel {
